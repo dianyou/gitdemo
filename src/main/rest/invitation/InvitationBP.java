@@ -83,7 +83,8 @@ public class InvitationBP {
 	public Response feedback(String s)
 	{
 		JSONObject jo = new JSONObject(s);
-		String bpName = jo.getString("name");
+		String bpName = jo.getString("name").replace("%20", " ")//去掉空格
+				.toUpperCase();
 		JSONObject res = new JSONObject();
 		Response response=null;
 		Connection con = HANAConnection.getConnection();
@@ -96,12 +97,12 @@ public class InvitationBP {
 	                entity(res.toString()).
 	                header("Content-Type", "application/json; charset=utf-8").build();
 		}
-		String updateSQL = prop.getProperty("SQL_FEEDBACK_SQL")
-				.replace("?BPNAME?", bpName.toUpperCase());
+		String updateSQL = prop.getProperty("SQL_FEEDBACK")
+				.replace("$BPNAME$", bpName);
 		
 		try {
 			Statement  stmt= con.createStatement();
-			System.out.println(updateSQL);
+	//		System.out.println(updateSQL);
 			stmt.execute(updateSQL);
 			con.commit();
 			res.put("updated",true );
@@ -176,12 +177,32 @@ public class InvitationBP {
 						pendingMembers.put(bpName);
 						continue;
 					}
-					email = rs.getNString("EMAIL");
+				
+					
+
+					//get bp members
+					String getMemberSQL = new StringBuilder("select * from ").append(DB_bpSchema).
+							append(".").append("BPMEMBER").append(" where UPPER(BP)='")
+							.append(bpName.toUpperCase()).append("'")
+							.append(" and PRIMARIED=1")
+							.toString();
+	//				System.out.println(getMemberSQL);
+					ResultSet mrs = stmt.executeQuery(getMemberSQL);
+					String inviteeFirstName=null;
+					String inviteeLastName = null;
+					if(mrs.next())
+					{
+						email = mrs.getNString("EMAIL");
+						inviteeFirstName = mrs.getNString("FIRSTNAME");
+						inviteeLastName = mrs.getNString("LASTNAME");
+					}
+					
 					if(email==null||email.length()==0)
 					{
 						noValidEmailMemebers.put(bpName);
 						continue;
 					}
+					
 						
 					String updateSQL = new StringBuilder("update ")
 						.append(DB_bpSchema).append(".").append("BPDIRECTORY")
@@ -190,7 +211,7 @@ public class InvitationBP {
 							.append(" where UPPER(BPNAME)='")
 							.append(bpName.toUpperCase()).append("'")
 							.toString(); 
-					System.out.println(updateSQL);
+	//				System.out.println(updateSQL);
 
 					String insertSQL = new StringBuilder("insert into ")
 						.append(DB_bpSchema).append(".").append("INVITATIONLIST")
@@ -198,12 +219,23 @@ public class InvitationBP {
 						.append("values('").append(bpName).append("','").append(email)
 						.append("',").append("CURRENT_TIMESTAMP,").append(period)
 						.append(",'PENDING')").toString();
-					System.out.println(insertSQL);
-
-				//	email = "gavin.gai@sap.com";
+	//				System.out.println(insertSQL);
 					
-					SendMailThreads sendThread = new SendMailThreads(email, bpName,
-							"SAP",invitedMembers,emailSentFailed);
+					if(inviteeFirstName==null )
+					{
+						if(inviteeLastName==null)
+						{
+							inviteeFirstName=bpName;
+							inviteeLastName="";
+						}
+					}
+					else if(inviteeLastName==null)
+					{
+						inviteeLastName="";
+					}
+
+					SendMailThreads sendThread = new SendMailThreads(email, inviteeFirstName,inviteeLastName,
+							"SAP",invitedMembers,emailSentFailed,bpName);
 					pool.execute(sendThread);
 					stmt.execute(updateSQL);
 					stmt.execute(insertSQL);

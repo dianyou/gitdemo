@@ -32,7 +32,7 @@ public class InvitationMail {
 		}
 	}
 	
-	public static boolean sendMail(String mail,String inviteeName,String inviterName)
+	public static boolean sendMail(String mail,String inviteeFirstName,String inviteeLastName,String inviterName,String bpName)
 	{
 		boolean flag = false;
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -44,12 +44,12 @@ public class InvitationMail {
 
         JSONObject jo =  new JSONObject();
         jo.put("inviteeEmail", mail);
-        jo.put("inviteeFirstName", inviteeName);
-        //jo.put("inviteeLastName", "Gai");
+        jo.put("inviteeFirstName", inviteeFirstName);
+        jo.put("inviteeLastName", inviteeLastName);
         jo.put("inviterName", inviterName);
         jo.put("headerText", prop.getProperty("MAIL_HEADERTEXT"));
         jo.put("footerText", prop.getProperty("MAIL_FOOTERTEXT"));
-        jo.put("targetUrl",prop.getProperty("MAIL_ACCEPT_URL").replace("?bpname?", inviteeName));
+        jo.put("targetUrl",prop.getProperty("MAIL_ACCEPT_URL").replace("$BPNAME$", bpName));
       //  System.out.println("Json Body: " + jsonBody.toString());
         StringEntity requestEntity = new StringEntity(
                 jo.toString(),

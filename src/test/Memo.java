@@ -253,15 +253,14 @@ public class Memo {
 		String s = "{\"members\":[\"IBM\",\"APPLE\","
 				+"\"American Express\"],\"period\":\"24\"}";
 		System.out.println(s);
-		String bpName = "Coca-Cola";
-		String email = "gavin.gai@sap.com";
-		String path = 
-				Memo.class.getClassLoader()
-				.getResource("hanaInfo.properties").getFile();
-		System.out.println(path);
+//		String path = 
+//				Memo.class.getClassLoader()
+//				.getResource("hanaInfo.properties").getFile();
+//		System.out.println(path);
 		Memo test = new Memo();
-//		test.sendMail(email,"Wen","SAP");
-	//	test.feedBack(bpName, "REJECTED");
+		
+		String sql = prop.getProperty("SQL_BPLIST");
+		System.out.println(sql);
 
 	}
 

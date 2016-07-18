@@ -96,17 +96,16 @@ public class BPList {
 			outline.put("list", ja);
 			return outline.toString();
 		}		
-		StringBuilder sql =null;
+		String sql =null;
 		if(name ==null)
 		{
-			sql= new StringBuilder("select * from ").append(DB_bpSchema).
-					append(".").append("BPDIRECTORY").append(" order by STATUS desc,BPNAME asc");
+			sql= prop.getProperty("SQL_BPLIST");
 		}
 		else
 		{
 			sql= new StringBuilder("select * from ").append(DB_bpSchema).
 					append(".").append(DB_bpDir).append(" where UPPER(BPNAME)='")
-					.append(name.toUpperCase()).append("' order by STATUS desc,BPNAME asc");
+					.append(name.toUpperCase()).append("' order by STATUS desc,BPNAME asc").toString();
 		}
 		ResultSet rs = null;
 //		System.out.println(sql.toString());
@@ -114,17 +113,18 @@ public class BPList {
 			Statement stmt= con.createStatement();
 			//update the pending status to expired!
 			String updateSQL = new StringBuilder("UPDATE ").append(DB_bpSchema)
-					.append(".").append(DB_bpDir).append(" set status ='EXPIRED' ")
+					.append(".").append(DB_bpDir).append(" set status ='EXPIRED',")
+					.append("EXPIREDDATE = add_seconds(INVITATIONDATE, INVITATIONVALID*3600) ")
 					.append("where status = 'PENDING' and "
 					+ "seconds_between(invitationdate,"
 					+ "current_timestamp)>INVITATIONVALID*3600")
 					.toString();	
 			System.out.println(updateSQL);
-			con.commit();
+		
 			stmt.execute(updateSQL);
+			con.commit();
 			
-			
-			rs = stmt.executeQuery(sql.toString());
+			rs = stmt.executeQuery(sql);
 			while(rs != null &&rs.next())
 			{
 				JSONObject jo = new JSONObject();
@@ -137,6 +137,8 @@ public class BPList {
 					dateType = "JOINEDDATE";
 				else if(status.toUpperCase().equals("PENDING"))
 					dateType = "INVITATIONDATE";
+				else if(status.toUpperCase().equals("EXPIRED"))
+					dateType = "EXPIREDDATE"; 
 				if(dateType!=null)
 				{
 					String bpDate = rs.getNString(dateType);
