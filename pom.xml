@@ -157,5 +157,13 @@
     <version>1.2</version>
 </dependency>
 <!--SAP Mail end-->
+
+<!--Spring Security-->
+    <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-web</artifactId>
+        <version>4.1.1.RELEASE</version>
+    </dependency>
+
   </dependencies>
 </project>

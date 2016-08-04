@@ -15,5 +15,9 @@ public class APIApplication extends ResourceConfig {
         register(invitation.InvitationBP.class);
         //bp list
         register(invitation.BPList.class);
+        //userManagement
+        register(administration.UserManagement.class);
+        //roles
+        register(administration.Roles.class);
     } 
 } 

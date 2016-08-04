@@ -103,8 +103,7 @@ public class BPList {
 		}
 		else
 		{
-			sql= new StringBuilder("select * from ").append(DB_bpSchema).
-					append(".").append(DB_bpDir).append(" where UPPER(BPNAME)='")
+			sql= new StringBuilder("select * from ").append(DB_bpDir).append(" where UPPER(BPNAME)='")
 					.append(name.toUpperCase()).append("' order by STATUS desc,BPNAME asc").toString();
 		}
 		ResultSet rs = null;
@@ -112,14 +111,8 @@ public class BPList {
 		try {
 			Statement stmt= con.createStatement();
 			//update the pending status to expired!
-			String updateSQL = new StringBuilder("UPDATE ").append(DB_bpSchema)
-					.append(".").append(DB_bpDir).append(" set status ='EXPIRED',")
-					.append("EXPIREDDATE = add_seconds(INVITATIONDATE, INVITATIONVALID*3600) ")
-					.append("where status = 'PENDING' and "
-					+ "seconds_between(invitationdate,"
-					+ "current_timestamp)>INVITATIONVALID*3600")
-					.toString();	
-			System.out.println(updateSQL);
+			String updateSQL = prop.getProperty("SQL_EXPIRED_UPDATE");
+			//System.out.println(updateSQL);
 		
 			stmt.execute(updateSQL);
 			con.commit();

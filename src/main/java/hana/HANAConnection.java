@@ -28,19 +28,23 @@ public class HANAConnection {
 	
 	public static Connection getConnection()
 	{
+		String hanaUser = prop.getProperty("HANA_USER");
+		String hanaPasswd = prop.getProperty("HANA_PASSWD");
+		String bpSchema = prop.getProperty("HANA_SCHEMA_BP");
+		String bpTable = prop.getProperty("HANA_BP_TABLE");
+
 		String hanaURL = new StringBuilder("jdbc:sap://").
 				append(prop.getProperty("HANA_HOST")).append(":3").
 				append(prop.getProperty("HANA_INSTANCE_NUMBER")).
-					append("15/?autocommit=false&reconnect=true").toString();
-		String hanaUser = prop.getProperty("HANA_USER");
-		String hanaPasswd = prop.getProperty("HANA_PASSWD");
-		String bpSchema = prop.getProperty("HANA_BP_SCHEMA");
-		String bpTable = prop.getProperty("HANA_BP_TABLE");
+					append("15/?autocommit=false&reconnect=true")
+					.append("&currentschema=").append(bpSchema).toString();
+	//	System.out.println(hanaURL);
 		Connection con = null;
 		//connect to hana
 		try {
 				Class.forName("com.sap.db.jdbc.Driver");
 				con = DriverManager.getConnection(hanaURL,hanaUser,hanaPasswd);
+			//	con = com.sap.db.jdbc.Driver.c
 		} catch (ClassNotFoundException | SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

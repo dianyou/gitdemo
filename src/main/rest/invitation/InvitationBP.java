@@ -148,11 +148,12 @@ public class InvitationBP {
 		for(int i=0;i<ja.length();i++)
 		{
 			String bpName = ja.getString(i);
-			System.out.println(bpName);
+	//		System.out.println(bpName);
 			String isInvitedSQL = new StringBuilder("select * from ").append(DB_bpSchema).
 					append(".").append("BPDIRECTORY").append(" where UPPER(BPNAME)='")
 					.append(bpName.toUpperCase()).append("'").toString();
-//			System.out.println(isInvitedSQL.toString());
+			
+	//		System.out.println(isInvitedSQL.toString());
 			ResultSet rs = null;
 			String email=null;
 			String period=prop.getProperty("VALID_PERIOD");
@@ -182,11 +183,11 @@ public class InvitationBP {
 
 					//get bp members
 					String getMemberSQL = new StringBuilder("select * from ").append(DB_bpSchema).
-							append(".").append("BPMEMBER").append(" where UPPER(BP)='")
+							append(".").append("BP_MEMBER").append(" where UPPER(BP)='")
 							.append(bpName.toUpperCase()).append("'")
 							.append(" and PRIMARIED=1")
 							.toString();
-	//				System.out.println(getMemberSQL);
+//					System.out.println(getMemberSQL);
 					ResultSet mrs = stmt.executeQuery(getMemberSQL);
 					String inviteeFirstName=null;
 					String inviteeLastName = null;

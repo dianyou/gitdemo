@@ -16,7 +16,7 @@ public class InvitationBPTest {
 	@Test
 	public void testInvite() {
 		boolean flag = 
-				InvitationMail.sendMail("gg8912@gmail.com", "Wen", "SAP","NIKE");
+				InvitationMail.sendMail("gg8912@gmail.com","Gai" ,"Wen", "SAP","NIKE");
 	//	flag = ibp.sendMail("w19891212sdfasdfadsfsdaf@163.com", "haha文", "me");
 		//System.out.println(flag);
 		assertEquals(true,flag);
